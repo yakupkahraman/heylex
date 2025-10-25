@@ -3,28 +3,75 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
+import 'package:heylex/features/games/service/game_service.dart';
 
-class AnalysChart extends StatelessWidget {
+class AnalysChart extends StatefulWidget {
   final MaterialColor chartColor;
+  final String gameId;
 
-  const AnalysChart({super.key, this.chartColor = Colors.green});
+  const AnalysChart({
+    super.key,
+    this.chartColor = Colors.green,
+    required this.gameId,
+  });
 
-  // Örnek veri
+  @override
+  State<AnalysChart> createState() => _AnalysChartState();
+}
+
+class _AnalysChartState extends State<AnalysChart> {
+  final _gameService = GameService();
+  Map<String, double> _weeklyData = {};
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final data = await _gameService.getWeeklyGameData(widget.gameId);
+    if (mounted) {
+      setState(() {
+        _weeklyData = data;
+        _isLoading = false;
+      });
+    }
+  }
+
   List<FlSpot> _getChartData() {
-    return [
-      FlSpot(0, 3),
-      FlSpot(1, 2),
-      FlSpot(2, 5),
-      FlSpot(3, 3.5),
-      FlSpot(4, 4),
-      FlSpot(5, 3),
-      FlSpot(6, 4.5),
-    ];
+    final now = DateTime.now();
+    final spots = <FlSpot>[];
+
+    for (int i = 0; i < 7; i++) {
+      final date = now.subtract(Duration(days: 6 - i));
+      final dateKey =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final value = _weeklyData[dateKey] ?? 0.0;
+      spots.add(FlSpot(i.toDouble(), value));
+    }
+
+    return spots;
   }
 
   @override
   Widget build(BuildContext context) {
     final weekDays = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+
+    if (_isLoading) {
+      return Container(
+        height: 300,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(32),
+          color: ThemeConstants.darkGreyColor,
+        ),
+        child: Center(
+          child: CircularProgressIndicator(color: widget.chartColor),
+        ),
+      );
+    }
 
     return Container(
       height: 300,
@@ -46,16 +93,16 @@ class AnalysChart extends StatelessWidget {
         ),
         child: LineChart(
           LineChartData(
-            maxY: 8.0,
+            maxY: 10.0,
             minY: 0,
             lineBarsData: [
               LineChartBarData(
                 spots: _getChartData(),
                 gradient: LinearGradient(
                   colors: [
-                    chartColor.shade400,
-                    chartColor.shade600,
-                    chartColor.shade500,
+                    widget.chartColor.shade400,
+                    widget.chartColor.shade600,
+                    widget.chartColor.shade500,
                   ],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
@@ -70,9 +117,9 @@ class AnalysChart extends StatelessWidget {
                   show: true,
                   gradient: LinearGradient(
                     colors: [
-                      chartColor.shade400.withOpacity(0.3),
-                      chartColor.shade600.withOpacity(0.1),
-                      chartColor.shade500.withOpacity(0.05),
+                      widget.chartColor.shade400.withOpacity(0.3),
+                      widget.chartColor.shade600.withOpacity(0.1),
+                      widget.chartColor.shade500.withOpacity(0.05),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -114,7 +161,7 @@ class AnalysChart extends StatelessWidget {
                     return Container(
                       padding: const EdgeInsets.only(right: 8),
                       child: Text(
-                        '${value.toInt() * 5}',
+                        '${value.toInt()}',
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
@@ -139,14 +186,14 @@ class AnalysChart extends StatelessWidget {
               horizontalInterval: 1,
               getDrawingVerticalLine: (value) {
                 return FlLine(
-                  color: chartColor.shade700.withOpacity(0.2),
+                  color: widget.chartColor.shade700.withOpacity(0.2),
                   strokeWidth: 1,
                   dashArray: [4, 4],
                 );
               },
               getDrawingHorizontalLine: (value) {
                 return FlLine(
-                  color: chartColor.shade700.withOpacity(0.2),
+                  color: widget.chartColor.shade700.withOpacity(0.2),
                   strokeWidth: 1,
                   dashArray: [4, 4],
                 );

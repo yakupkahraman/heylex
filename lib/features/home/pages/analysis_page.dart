@@ -41,6 +41,8 @@ class AnalysisPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 16),
+
+              //sound_hunter
               GlassEffectContainer(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -57,12 +59,17 @@ class AnalysisPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 16),
-                      AnalysChart(),
+                      AnalysChart(
+                        gameId: 'sound_hunter',
+                        chartColor: Colors.green,
+                      ),
                     ],
                   ),
                 ),
               ),
               SizedBox(height: 16),
+
+              //true_or_false
               GlassEffectContainer(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -79,12 +86,17 @@ class AnalysisPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 16),
-                      AnalysChart(chartColor: Colors.orange),
+                      AnalysChart(
+                        gameId: 'true_or_false',
+                        chartColor: Colors.orange,
+                      ),
                     ],
                   ),
                 ),
               ),
               SizedBox(height: 16),
+
+              //jumbled_words
               GlassEffectContainer(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -101,12 +113,17 @@ class AnalysisPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 16),
-                      AnalysChart(chartColor: Colors.pink),
+                      AnalysChart(
+                        gameId: 'jumbled_words',
+                        chartColor: Colors.pink,
+                      ),
                     ],
                   ),
                 ),
               ),
               SizedBox(height: 16),
+
+              //sentence_detective
               GlassEffectContainer(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -123,7 +140,10 @@ class AnalysisPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 16),
-                      AnalysChart(chartColor: Colors.blue),
+                      AnalysChart(
+                        gameId: 'sentence_detective',
+                        chartColor: Colors.blue,
+                      ),
                     ],
                   ),
                 ),

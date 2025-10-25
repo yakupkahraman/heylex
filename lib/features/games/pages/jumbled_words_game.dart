@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:heylex/core/components/glass_effect_container.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/components/auth_button.dart';
+import 'package:heylex/features/games/service/game_service.dart';
 
 class JumbledWordsGame extends StatefulWidget {
   const JumbledWordsGame({super.key});
@@ -16,6 +17,9 @@ class _JumbledWordsGameState extends State<JumbledWordsGame> {
   int _currentStep = 1;
   final int _totalSteps = 5;
 
+  int _correctAnswers = 0;
+  int _wrongAnswers = 0;
+
   String correctWord = "furkan";
   List<String> letters = ["f", "u", "r", "a", "n", "k"];
 
@@ -23,6 +27,7 @@ class _JumbledWordsGameState extends State<JumbledWordsGame> {
   int? _selectedIndex; // Seçili harfin indexi
 
   final player = AudioPlayer();
+  final _gameService = GameService();
 
   @override
   void initState() {
@@ -51,8 +56,10 @@ class _JumbledWordsGameState extends State<JumbledWordsGame> {
     bool isCorrect = userWord == correctWord;
 
     if (isCorrect) {
+      _correctAnswers++;
       goodAnswerPlaySound();
     } else {
+      _wrongAnswers++;
       badAnswerPlaySound();
     }
   }
@@ -75,9 +82,107 @@ class _JumbledWordsGameState extends State<JumbledWordsGame> {
         letters.shuffle();
       });
     } else {
-      // Son adıma gelindi, oyun bitti
-      context.go('/');
+      // Son adıma gelindi, oyun bitti - sonuçları göster
+      _showResultsDialog();
     }
+  }
+
+  void _showResultsDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: ThemeConstants.darkGreyColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(32),
+          ),
+          title: Text(
+            'Oyun Bitti!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: "OpenDyslexic",
+              color: ThemeConstants.creamColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.green, size: 48),
+                      SizedBox(height: 8),
+                      Text(
+                        '$_correctAnswers',
+                        style: TextStyle(
+                          fontFamily: "OpenDyslexic",
+                          fontSize: 32,
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Doğru',
+                        style: TextStyle(
+                          fontFamily: "OpenDyslexic",
+                          color: ThemeConstants.creamColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Icon(Icons.cancel, color: Colors.red, size: 48),
+                      SizedBox(height: 8),
+                      Text(
+                        '$_wrongAnswers',
+                        style: TextStyle(
+                          fontFamily: "OpenDyslexic",
+                          fontSize: 32,
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Yanlış',
+                        style: TextStyle(
+                          fontFamily: "OpenDyslexic",
+                          color: ThemeConstants.creamColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            SizedBox(
+              width: double.infinity,
+              child: AuthButton(
+                label: 'Tamam',
+                onPressed: () async {
+                  // Oyun sonucunu kaydet
+                  await _gameService.saveGameResult(
+                    gameId: 'jumbled_words',
+                    correctCount: _correctAnswers,
+                    wrongCount: _wrongAnswers,
+                  );
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                    context.go('/');
+                  }
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _onLetterTap(int index) {
