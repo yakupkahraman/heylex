@@ -58,19 +58,7 @@ class RouterManager {
       ShellRoute(
         builder: (context, state, child) => ShellPage(child: child),
         routes: [
-          GoRoute(
-            path: '/',
-            builder: (context, state) => const HomePage(),
-            routes: [
-              GoRoute(
-                path: 'games/:id',
-                builder: (context, state) {
-                  final gameId = state.pathParameters['id']!;
-                  return GamesFlow(gameId: gameId);
-                },
-              ),
-            ],
-          ),
+          GoRoute(path: '/', builder: (context, state) => const HomePage()),
           GoRoute(
             path: '/analysis',
             builder: (context, state) {
@@ -91,7 +79,13 @@ class RouterManager {
           ),
         ],
       ),
-
+      GoRoute(
+        path: '/games/:id',
+        builder: (context, state) {
+          final gameId = state.pathParameters['id']!;
+          return GamesFlow(gameId: gameId);
+        },
+      ),
       GoRoute(
         path: '/professionals',
         builder: (context, state) {

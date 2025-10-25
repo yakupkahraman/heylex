@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/components/auth_button.dart';
 import 'package:heylex/core/components/glass_effect_container.dart';
@@ -212,7 +213,7 @@ class _SoundHunterState extends State<SoundHunter> {
       appBar: AppBar(
         backgroundColor: ThemeConstants.darkGreyColor,
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.go('/'),
           icon: Icon(Icons.close, color: ThemeConstants.creamColor),
         ),
         title: Column(

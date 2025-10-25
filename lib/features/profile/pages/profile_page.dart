@@ -35,12 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        leading: IconButton(
-          icon: Icon(Icons.chevron_left, color: Colors.white),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+
         title: Text("Profil", style: TextStyle(fontFamily: "OpenDyslexic")),
         centerTitle: true,
       ),
