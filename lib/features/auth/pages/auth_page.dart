@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/components/auth_button.dart';
-import 'package:heylex/features/auth/pages/login_page.dart';
-import 'package:heylex/features/auth/pages/register_page.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -39,11 +38,7 @@ class AuthPage extends StatelessWidget {
                     child: AuthButton(
                       label: "Kayıt Ol",
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => RegisterPage(),
-                          ),
-                        );
+                        context.go('/auth/register');
                       },
                     ),
                   ),
@@ -53,9 +48,7 @@ class AuthPage extends StatelessWidget {
                     child: AuthButton(
                       label: "Giriş Yap",
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
+                        context.go('/auth/login');
                       },
                     ),
                   ),

@@ -1,10 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/components/auth_button.dart';
 import 'package:heylex/features/auth/components/auth_textfield.dart';
 import 'package:heylex/features/auth/service/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -67,8 +69,16 @@ class _RegisterPageState extends State<RegisterPage> {
         });
 
         if (response.user != null) {
-          _showSuccess("Kayıt başarılı! Email adresinizi kontrol edin.");
-          Navigator.pop(context);
+          _showSuccess("Kayıt başarılı!");
+
+          // SharedPreferences'a kayıt durumunu set et
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('is_logged_in', true);
+
+          // Sorulara yönlendir
+          if (mounted) {
+            context.go('/auth/register/questions');
+          }
         } else {
           _showError("Kayıt başarısız oldu");
         }
