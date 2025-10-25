@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/components/auth_button.dart';
 import 'package:heylex/features/auth/components/auth_textfield.dart';
-import 'package:heylex/features/auth/service/auth_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:heylex/features/auth/providers/user_answers_provider.dart';
+import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -16,23 +16,35 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  final AuthService _authService = AuthService();
-  bool _isLoading = false;
 
   @override
   void dispose() {
+    _nameController.dispose();
+    _surnameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleRegister() async {
+  void _handleContinue() {
     // Validate inputs
+    if (_nameController.text.trim().isEmpty) {
+      _showError("Lütfen adınızı girin");
+      return;
+    }
+
+    if (_surnameController.text.trim().isEmpty) {
+      _showError("Lütfen soyadınızı girin");
+      return;
+    }
+
     if (_emailController.text.trim().isEmpty) {
       _showError("Lütfen email adresinizi girin");
       return;
@@ -53,45 +65,25 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    // Bilgileri provider'a kaydet
+    final provider = Provider.of<UserAnswersProvider>(context, listen: false);
+    provider.setBasicInfo(
+      _nameController.text.trim(),
+      _surnameController.text.trim(),
+    );
+    log(
+      'Temel bilgiler kaydedildi: ${_nameController.text.trim()} ${_surnameController.text.trim()}',
+    );
+    provider.setEmailAndPassword(
+      _emailController.text.trim(),
+      _passwordController.text,
+    );
+    log(
+      'Email ve şifre kaydedildi: ${_emailController.text.trim()} ${_passwordController.text.trim()}',
+    );
 
-    try {
-      final response = await _authService.signUpWithEmailPassword(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
-
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-
-        if (response.user != null) {
-          _showSuccess("Kayıt başarılı!");
-
-          // SharedPreferences'a kayıt durumunu set et
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setBool('is_logged_in', true);
-
-          // Sorulara yönlendir
-          if (mounted) {
-            context.go('/auth/register/questions');
-          }
-        } else {
-          _showError("Kayıt başarısız oldu");
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        _showError("Hata: ${e.toString()}");
-        log("Hata kayıt olurken: $e");
-      }
-    }
+    // Sorulara yönlendir
+    context.go('/auth/register/questions');
   }
 
   void _showError(String message) {
@@ -100,16 +92,10 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _showSuccess(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.green),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: ThemeConstants.darkGreyColor,
@@ -119,69 +105,103 @@ class _RegisterPageState extends State<RegisterPage> {
           },
           icon: const Icon(Icons.chevron_left),
         ),
+        title: Row(
+          children: [
+            Hero(
+              tag: 'app_logo',
+              child: Image.asset('assets/images/logo.png', height: 32),
+            ),
+            SizedBox(width: 8),
+            Text(
+              "HeyLex",
+              style: TextStyle(
+                fontFamily: "OpenDyslexic",
+                fontSize: 16,
+                color: ThemeConstants.creamColor,
+              ),
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                children: [
-                  SizedBox(
-                    width: 160,
-                    child: Image.asset('assets/images/logo.png'),
-                  ),
-                  SizedBox(height: 15),
-                  Text(
-                    "HeyLex",
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    "Haydi Kayıt Olalım!",
                     style: TextStyle(
-                      fontFamily: 'OpenDyslexic',
+                      fontSize: 32,
+                      fontFamily: "OpenDyslexic",
                       color: ThemeConstants.creamColor,
-                      fontSize: 26,
                     ),
                   ),
-                ],
-              ),
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                    child: AuthTextfield(
-                      hintText: "Email",
-                      prefixIcon: Icons.email,
-                      controller: _emailController,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                    child: AuthTextfield(
-                      hintText: "Şifre",
-                      prefixIcon: Icons.lock,
-                      controller: _passwordController,
-                      obscureText: true,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                    child: AuthTextfield(
-                      hintText: "Şifreni Onayla",
-                      prefixIcon: Icons.lock,
-                      controller: _confirmPasswordController,
-                      obscureText: true,
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                child: AuthButton(
-                  label: _isLoading ? "Kayıt Olunuyor..." : "Kayıt Ol",
-                  onPressed: _isLoading ? null : _handleRegister,
                 ),
-              ),
-            ],
+                SizedBox(height: 20),
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                      child: AuthTextfield(
+                        hintText: "Ad",
+                        prefixIcon: Icons.person,
+                        controller: _nameController,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                      child: AuthTextfield(
+                        hintText: "Soyad",
+                        prefixIcon: Icons.person_outline,
+                        controller: _surnameController,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                      child: AuthTextfield(
+                        hintText: "Email",
+                        prefixIcon: Icons.email,
+                        controller: _emailController,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                      child: AuthTextfield(
+                        hintText: "Şifre",
+                        prefixIcon: Icons.lock,
+                        controller: _passwordController,
+                        obscureText: true,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                      child: AuthTextfield(
+                        hintText: "Şifreni Onayla",
+                        prefixIcon: Icons.lock,
+                        controller: _confirmPasswordController,
+                        obscureText: true,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 50.0,
+                    vertical: 60.0,
+                  ),
+                  child: AuthButton(
+                    label: "Devam Et",
+                    onPressed: _handleContinue,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

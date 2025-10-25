@@ -8,11 +8,15 @@ class QuestionsPage extends StatefulWidget {
     required this.question,
     required this.options,
     this.onOptionSelected,
+    this.isLastQuestion = false,
+    this.isLoading = false,
   });
 
   final String question;
   final List<String> options;
   final Function(String selectedOption)? onOptionSelected;
+  final bool isLastQuestion;
+  final bool isLoading;
 
   @override
   State<QuestionsPage> createState() => _QuestionsPageState();
@@ -80,7 +84,11 @@ class _QuestionsPageState extends State<QuestionsPage> {
                   value: _selectedIndex == index,
                   title: Text(
                     widget.options[index],
-                    style: TextStyle(fontSize: 24, fontFamily: "OpenDyslexic"),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: "OpenDyslexic",
+                      color: ThemeConstants.creamColor,
+                    ),
                   ),
                   onChanged: (bool? value) {
                     if (value == true) {
@@ -96,8 +104,12 @@ class _QuestionsPageState extends State<QuestionsPage> {
           Padding(
             padding: const EdgeInsets.all(50.0),
             child: AuthButton(
-              label: "Devam Et",
-              onPressed: _selectedIndex != null ? _handleContinue : null,
+              label: widget.isLoading
+                  ? "Kaydediliyor..."
+                  : (widget.isLastQuestion ? "Bitir" : "Devam Et"),
+              onPressed: widget.isLoading
+                  ? null
+                  : (_selectedIndex != null ? _handleContinue : null),
             ),
           ),
         ],

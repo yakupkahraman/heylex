@@ -103,54 +103,64 @@ class _LoginPageState extends State<LoginPage> {
           },
           icon: const Icon(Icons.chevron_left),
         ),
+        title: Row(
+          children: [
+            Hero(
+              tag: 'app_logo',
+              child: Image.asset('assets/images/logo.png', height: 32),
+            ),
+            SizedBox(width: 8),
+            Text(
+              "HeyLex",
+              style: TextStyle(
+                fontFamily: "OpenDyslexic",
+                fontSize: 16,
+                color: ThemeConstants.creamColor,
+              ),
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Column(
-                children: [
-                  SizedBox(
-                    width: 160,
-                    child: Image.asset('assets/images/logo.png'),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  "Hoş Geldiniz!",
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontFamily: "OpenDyslexic",
+                    color: ThemeConstants.creamColor,
                   ),
-                  SizedBox(height: 15),
-                  Text(
-                    "HeyLex",
-                    style: TextStyle(
-                      fontFamily: 'OpenDyslexic',
-                      color: ThemeConstants.creamColor,
-                      fontSize: 26,
-                    ),
-                  ),
-                ],
+                ),
               ),
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                    child: AuthTextfield(
-                      hintText: "Email",
-                      prefixIcon: Icons.email,
-                      controller: _emailController,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                    child: AuthTextfield(
-                      hintText: "Şifre",
-                      prefixIcon: Icons.lock,
-                      controller: _passwordController,
-                      obscureText: true,
-                      onSubmitted: (value) => _handleLogin(),
-                    ),
-                  ),
-                ],
-              ),
+              SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                child: AuthTextfield(
+                  hintText: "Email",
+                  prefixIcon: Icons.email,
+                  controller: _emailController,
+                ),
+              ),
+              SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                child: AuthTextfield(
+                  hintText: "Şifre",
+                  prefixIcon: Icons.lock,
+                  controller: _passwordController,
+                  obscureText: true,
+                  onSubmitted: (value) => _handleLogin(),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 50.0,
+                  vertical: 60,
+                ),
                 child: AuthButton(
                   label: _isLoading ? "Giriş Yapılıyor..." : "Giriş Yap",
                   onPressed: _isLoading ? null : _handleLogin,

@@ -16,9 +16,12 @@ class AuthPage extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  SizedBox(
-                    width: 160,
-                    child: Image.asset('assets/images/logo.png'),
+                  Hero(
+                    tag: 'app_logo',
+                    child: SizedBox(
+                      width: 160,
+                      child: Image.asset('assets/images/logo.png'),
+                    ),
                   ),
                   SizedBox(height: 15),
                   Text(
