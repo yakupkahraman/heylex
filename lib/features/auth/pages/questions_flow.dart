@@ -23,7 +23,7 @@ class _QuestionsFlowState extends State<QuestionsFlow> {
   final List<Map<String, dynamic>> _questions = [
     {
       'question': 'Hangi yaş grubundasınız?',
-      'options': ['8-12', '13-17', '18+'],
+      'options': ['14-17', '18-24'],
       'key': 'age_group',
     },
     {
@@ -67,6 +67,18 @@ class _QuestionsFlowState extends State<QuestionsFlow> {
       'key': 'motivating_games',
     },
     {
+      'question': 'İlgi alanlarınız nelerdir?',
+      'options': [
+        'Spor',
+        'Sanat',
+        'Müzik',
+        'Resim/Tasarım',
+        'Teknoloji/Yazılım',
+        'Doğa/Hayvanlar',
+      ],
+      'key': 'working_with_professional',
+    },
+    {
       'question': 'Şu anda bir uzman ile çalışıyor musun?',
       'options': [
         'Evet, bir uzmanla düzenli olarak çalışıyorum',
@@ -82,8 +94,6 @@ class _QuestionsFlowState extends State<QuestionsFlow> {
     // Cevabı provider'a kaydet
     final provider = Provider.of<UserAnswersProvider>(context, listen: false);
     provider.updateAnswer(currentQuestion['key'], answer);
-
-    log('Cevap kaydedildi: ${currentQuestion['key']} = $answer');
 
     if (_currentQuestionIndex < _questions.length - 1) {
       // Bir sonraki soruya geç
@@ -117,7 +127,6 @@ class _QuestionsFlowState extends State<QuestionsFlow> {
         email,
         password,
       );
-      log('Kayıt işlemi tamamlandı: $response');
 
       if (response.user == null) {
         _showError("Kayıt başarısız oldu");
@@ -127,9 +136,6 @@ class _QuestionsFlowState extends State<QuestionsFlow> {
 
       await Supabase.instance.client.from('profiles').insert(profileData);
 
-      log('Tüm cevaplar kaydedildi: $fullData');
-
-      // SharedPreferences'a bayrakları set et
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('is_logged_in', true);
       await prefs.setBool('questions_completed', true);

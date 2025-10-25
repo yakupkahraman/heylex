@@ -14,11 +14,11 @@ class UserProvider with ChangeNotifier {
   String? readingGoal;
   String? diagnosisTime;
   String? motivatingGames;
+  String? interests;
   String? workingWithProfessional;
 
   bool get isLoggedIn => id != null;
 
-  // Kullanıcıyı Provider'a set et
   void setUser(Map<String, dynamic> data) {
     id = data['id'];
     name = data['name'];
@@ -29,11 +29,11 @@ class UserProvider with ChangeNotifier {
     readingGoal = data['reading_goal'];
     diagnosisTime = data['diagnosis_time'];
     motivatingGames = data['motivating_games'];
+    interests = data['interests'];
     workingWithProfessional = data['working_with_professional'];
     notifyListeners();
   }
 
-  // Supabase'e giriş yapmış kullanıcıyı getir ve profili çek
   Future<void> loadFromSupabase() async {
     final user = supabase.auth.currentUser;
     if (user == null) return;
@@ -48,7 +48,6 @@ class UserProvider with ChangeNotifier {
     await saveToLocal();
   }
 
-  // SharedPreferences'a kaydet
   Future<void> saveToLocal() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('id', id ?? '');
@@ -60,13 +59,13 @@ class UserProvider with ChangeNotifier {
     await prefs.setString('reading_goal', readingGoal ?? '');
     await prefs.setString('diagnosis_time', diagnosisTime ?? '');
     await prefs.setString('motivating_games', motivatingGames ?? '');
+    await prefs.setString('interests', interests ?? '');
     await prefs.setString(
       'working_with_professional',
       workingWithProfessional ?? '',
     );
   }
 
-  // SharedPreferences'tan yükle
   Future<void> loadFromLocal() async {
     final prefs = await SharedPreferences.getInstance();
     final storedId = prefs.getString('id');
@@ -81,17 +80,16 @@ class UserProvider with ChangeNotifier {
     readingGoal = prefs.getString('reading_goal');
     diagnosisTime = prefs.getString('diagnosis_time');
     motivatingGames = prefs.getString('motivating_games');
+    interests = prefs.getString('interests');
     workingWithProfessional = prefs.getString('working_with_professional');
     notifyListeners();
   }
 
-  // Çıkış yap
   Future<void> logout() async {
     await supabase.auth.signOut();
     await clear();
   }
 
-  // Provider ve local storage temizliği
   Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
@@ -104,6 +102,7 @@ class UserProvider with ChangeNotifier {
     readingGoal = null;
     diagnosisTime = null;
     motivatingGames = null;
+    interests = null;
     workingWithProfessional = null;
     notifyListeners();
   }
