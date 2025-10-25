@@ -86,9 +86,20 @@ class _HomePageState extends State<HomePage> {
       ),
       appBar: AppBar(
         centerTitle: true,
-        title: Text("HeyLex", style: TextStyle(fontFamily: "OpenDyslexic")),
+        title: Text(
+          "HeyLex",
+          style: TextStyle(
+            fontFamily: "OpenDyslexic",
+            color: ThemeConstants.creamColor,
+          ),
+        ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu, color: ThemeConstants.creamColor),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         actions: [
           IconButton(
             icon: Icon(
@@ -131,18 +142,29 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            GameInfoContainer(title: "Ses Avcısı", gameId: "sound_hunter"),
+            GameInfoContainer(
+              title: "Ses Avcısı",
+              gameId: "sound_hunter",
+              typeIcon: Icons.hearing,
+              typeContent: 'Fonolojik Disleksi',
+            ),
             GameInfoContainer(
               title: "Doğru mu Yanlış mı?",
               gameId: "true_or_false",
+              typeIcon: Icons.search,
+              typeContent: 'Yüzey Disleksi',
             ),
             GameInfoContainer(
               title: "Karışık Kelimeler",
               gameId: "jumbled_words",
+              typeIcon: Icons.visibility,
+              typeContent: 'Görsel / Dikkatsel Disleksi',
             ),
             GameInfoContainer(
               title: "Cümle Detektifi",
               gameId: "sentence_detective",
+              typeIcon: Icons.autorenew,
+              typeContent: 'Akıcılık Disleksisi',
             ),
           ],
         ),
