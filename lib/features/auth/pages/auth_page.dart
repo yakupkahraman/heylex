@@ -1,0 +1,70 @@
+import 'package:flutter/material.dart';
+import 'package:heylex/core/theme/theme_constants.dart';
+import 'package:heylex/features/auth/components/auth_button.dart';
+import 'package:heylex/features/auth/pages/login_page.dart';
+import 'package:heylex/features/auth/pages/register_page.dart';
+
+class AuthPage extends StatelessWidget {
+  const AuthPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                children: [
+                  SizedBox(
+                    width: 160,
+                    child: Image.asset('assets/images/logo.png'),
+                  ),
+                  SizedBox(height: 15),
+                  Text(
+                    "HeyLex",
+                    style: TextStyle(
+                      fontFamily: 'OpenDyslexic',
+                      color: ThemeConstants.creamColor,
+                      fontSize: 26,
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                    child: AuthButton(
+                      label: "Kayıt Ol",
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => RegisterPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                    child: AuthButton(
+                      label: "Giriş Yap",
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
