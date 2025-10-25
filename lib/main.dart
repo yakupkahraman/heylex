@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:heylex/core/router_manager.dart';
 import 'package:heylex/core/theme/theme_provider.dart';
 import 'package:heylex/features/auth/providers/user_answers_provider.dart';
+import 'package:heylex/features/auth/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,6 +17,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => UserAnswersProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],

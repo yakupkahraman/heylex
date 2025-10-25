@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heylex/features/auth/pages/questions_page.dart';
 import 'package:heylex/features/auth/providers/user_answers_provider.dart';
+import 'package:heylex/features/auth/providers/user_provider.dart';
 import 'package:heylex/features/auth/service/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -133,10 +134,12 @@ class _QuestionsFlowState extends State<QuestionsFlow> {
       await prefs.setBool('is_logged_in', true);
       await prefs.setBool('questions_completed', true);
 
-      // Provider'ı temizle
       provider.clear();
 
-      // HomePage'e geç
+      // ignore: use_build_context_synchronously
+      final userProvider = context.read<UserProvider>();
+      await userProvider.loadFromSupabase();
+
       if (mounted) {
         context.go('/');
       }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/service/auth_service.dart';
 import 'package:heylex/features/home/components/game_info_container.dart';
@@ -38,6 +39,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
+        centerTitle: true,
         title: Text("HeyLex", style: TextStyle(fontFamily: "OpenDyslexic")),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
@@ -52,7 +54,9 @@ class _HomePageState extends State<HomePage> {
               color: ThemeConstants.creamColor,
             ),
             iconSize: 32,
-            onPressed: () {},
+            onPressed: () {
+              context.go('/profile');
+            },
           ),
         ],
       ),
@@ -60,25 +64,29 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "SELAM ${_userName.toUpperCase()},",
-                    style: TextStyle(
-                      fontFamily: "OpenDyslexic",
-                      color: ThemeConstants.creamColor,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "SELAM ${_userName.toUpperCase()},",
+                      style: TextStyle(
+                        fontFamily: "OpenDyslexic",
+                        color: ThemeConstants.creamColor,
+                      ),
                     ),
-                  ),
-                  TextSpan(
-                    text:
-                        " cevapların doğrultusunda öncelik sıralamasına göre senin için hazırladığımız eğitimler aşağıdadır.",
-                    style: TextStyle(
-                      fontFamily: "OpenDyslexic",
-                      color: ThemeConstants.creamColor.withOpacity(0.7),
+                    TextSpan(
+                      text:
+                          " cevapların doğrultusunda öncelik sıralamasına göre senin için hazırladığımız eğitimler aşağıdadır.",
+                      style: TextStyle(
+                        fontFamily: "OpenDyslexic",
+                        fontSize: 12,
+                        color: ThemeConstants.creamColor.withOpacity(0.7),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             GameInfoContainer(title: "Ses Avcısı", gameId: "sound_hunter"),

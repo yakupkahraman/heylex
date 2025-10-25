@@ -11,7 +11,7 @@ class SoundHunter extends StatefulWidget {
 
 class _SoundHunterState extends State<SoundHunter> {
   int _currentStep = 1;
-  int _totalSteps = 10;
+  final int _totalSteps = 10;
 
   String question = "Ku";
   List<String> options = ["Kutu", "Kapak", "Kutucuk", "Uçak"];
@@ -24,14 +24,6 @@ class _SoundHunterState extends State<SoundHunter> {
     } else {
       // Son adıma gelindi, oyun bitti
       Navigator.pop(context);
-    }
-  }
-
-  void _previousStep() {
-    if (_currentStep > 1) {
-      setState(() {
-        _currentStep--;
-      });
     }
   }
 

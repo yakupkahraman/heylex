@@ -5,6 +5,7 @@ import 'package:heylex/features/auth/pages/questions_flow.dart';
 import 'package:heylex/features/auth/pages/register_page.dart';
 import 'package:heylex/features/games/pages/games_flow.dart';
 import 'package:heylex/features/home/presentation/home_page.dart';
+import 'package:heylex/features/profile/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RouterManager {
@@ -58,6 +59,12 @@ class RouterManager {
             builder: (context, state) {
               final gameId = state.pathParameters['id']!;
               return GamesFlow(gameId: gameId);
+            },
+          ),
+          GoRoute(
+            path: 'profile',
+            builder: (context, state) {
+              return ProfilePage();
             },
           ),
         ],

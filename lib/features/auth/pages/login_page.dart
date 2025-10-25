@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/components/auth_button.dart';
 import 'package:heylex/features/auth/components/auth_textfield.dart';
+import 'package:heylex/features/auth/providers/user_provider.dart';
 import 'package:heylex/features/auth/service/auth_service.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -63,12 +65,14 @@ class _LoginPageState extends State<LoginPage> {
         if (response.user != null) {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setBool('is_logged_in', true);
-          await prefs.setBool(
-            'questions_completed',
-            true,
-          ); // Login yapan kullanıcı zaten kayıtlı
+          await prefs.setBool('questions_completed', true);
           if (!mounted) return;
-          context.go('/');
+          final userProvider = context.read<UserProvider>();
+          await userProvider.loadFromSupabase();
+
+          if (mounted) {
+            context.go('/');
+          }
         } else {
           _showError("Giriş başarısız");
         }
