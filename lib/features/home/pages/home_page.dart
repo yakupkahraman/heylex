@@ -61,6 +61,7 @@ class _HomePageState extends State<HomePage> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: RichText(
+                    textAlign: TextAlign.center,
                     text: TextSpan(
                       children: [
                         TextSpan(
@@ -75,7 +76,7 @@ class _HomePageState extends State<HomePage> {
                               " cevapların doğrultusunda öncelik sıralamasına göre senin için hazırladığımız eğitimler aşağıdadır.",
                           style: TextStyle(
                             fontFamily: "OpenDyslexic",
-                            fontSize: 12,
+                            fontSize: 13,
                             color: ThemeConstants.creamColor.withOpacity(0.7),
                           ),
                         ),

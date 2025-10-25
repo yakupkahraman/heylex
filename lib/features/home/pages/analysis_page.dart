@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:heylex/core/components/glass_effect_container.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/home/components/analys_chart.dart';
+import 'package:shimmer/shimmer.dart';
 
 class AnalysisPage extends StatelessWidget {
   const AnalysisPage({super.key});
@@ -25,28 +26,17 @@ class AnalysisPage extends StatelessWidget {
               GlassEffectContainer(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Analizlerim',
-                        style: TextStyle(
-                          fontFamily: "OpenDyslexic",
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: ThemeConstants.creamColor,
-                        ),
+                  child: Shimmer.fromColors(
+                    baseColor: ThemeConstants.creamColor,
+                    highlightColor: ThemeConstants.creamColor.withOpacity(0.5),
+                    child: Text(
+                      'LexAI özetinizi hazırlıyor...',
+                      style: TextStyle(
+                        fontFamily: "OpenDyslexic",
+                        fontSize: 16,
+                        color: ThemeConstants.creamColor,
                       ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Burada kullanıcı analizleri görüntülenecek.',
-                        style: TextStyle(
-                          fontFamily: "OpenDyslexic",
-                          fontSize: 16,
-                          color: ThemeConstants.creamColor,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -58,7 +48,7 @@ class AnalysisPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Fonolojik",
+                        "Ses/Hece İşleme Becerisi",
                         style: TextStyle(
                           fontFamily: "OpenDyslexic",
                           fontSize: 18,
@@ -80,7 +70,7 @@ class AnalysisPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Yüzey",
+                        "Yazım ve Görsel Hafıza",
                         style: TextStyle(
                           fontFamily: "OpenDyslexic",
                           fontSize: 18,
@@ -102,7 +92,7 @@ class AnalysisPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Görsel",
+                        "Görsel Odak Gücü",
                         style: TextStyle(
                           fontFamily: "OpenDyslexic",
                           fontSize: 18,
@@ -124,7 +114,7 @@ class AnalysisPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Akıcılık",
+                        "Okuma Akıcılığı",
                         style: TextStyle(
                           fontFamily: "OpenDyslexic",
                           fontSize: 18,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heylex/core/components/glass_effect_container.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Rosette {
   final IconData icon;
@@ -25,7 +24,6 @@ class RosettesPage extends StatefulWidget {
 }
 
 class _RosettesPageState extends State<RosettesPage> {
-  String _userName = '';
   int _currentRosetteIndex = 0;
   final PageController _pageController = PageController();
 
@@ -67,24 +65,9 @@ class _RosettesPageState extends State<RosettesPage> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    _loadRosettes();
-  }
-
-  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadRosettes() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String name = prefs.getString('name') ?? '';
-    String surname = prefs.getString('surname') ?? '';
-    setState(() {
-      _userName = '$name $surname';
-    });
   }
 
   @override
@@ -94,7 +77,7 @@ class _RosettesPageState extends State<RosettesPage> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         centerTitle: true,
         title: Text(
-          _userName.isNotEmpty ? _userName : 'Rozetler',
+          'Rozetlerim',
           style: TextStyle(
             fontFamily: "OpenDyslexic",
             color: ThemeConstants.creamColor,

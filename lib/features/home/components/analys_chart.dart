@@ -114,7 +114,7 @@ class AnalysChart extends StatelessWidget {
                     return Container(
                       padding: const EdgeInsets.only(right: 8),
                       child: Text(
-                        '${value.toInt()}s',
+                        '${value.toInt() * 5}',
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w500,

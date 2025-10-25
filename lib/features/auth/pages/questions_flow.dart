@@ -67,7 +67,7 @@ class _QuestionsFlowState extends State<QuestionsFlow> {
       'key': 'motivating_games',
     },
     {
-      'question': 'İlgi alanlarınız nelerdir?',
+      'question': 'En çok ilgin hangi alandadır?',
       'options': [
         'Spor',
         'Sanat',

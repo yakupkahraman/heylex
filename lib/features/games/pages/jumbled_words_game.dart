@@ -14,7 +14,7 @@ class JumbledWordsGame extends StatefulWidget {
 
 class _JumbledWordsGameState extends State<JumbledWordsGame> {
   int _currentStep = 1;
-  final int _totalSteps = 10;
+  final int _totalSteps = 5;
 
   String correctWord = "furkan";
   List<String> letters = ["f", "u", "r", "a", "n", "k"];
@@ -76,7 +76,7 @@ class _JumbledWordsGameState extends State<JumbledWordsGame> {
       });
     } else {
       // Son adıma gelindi, oyun bitti
-      Navigator.pop(context);
+      context.go('/');
     }
   }
 
