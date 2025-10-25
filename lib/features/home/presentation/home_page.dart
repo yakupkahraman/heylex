@@ -38,15 +38,57 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      drawer: Drawer(
+        backgroundColor: ThemeConstants.darkGreyColor,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: ThemeConstants.darkGreyColor),
+              child: Text(
+                'HeyLex Menü',
+                style: TextStyle(
+                  fontFamily: "OpenDyslexic",
+                  color: ThemeConstants.creamColor,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.groups, color: ThemeConstants.creamColor),
+              title: Text(
+                'Uzmanlar',
+                style: TextStyle(
+                  fontFamily: "OpenDyslexic",
+                  color: ThemeConstants.creamColor,
+                ),
+              ),
+              onTap: () {
+                context.go('/professionals');
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.military_tech,
+                color: ThemeConstants.creamColor,
+              ),
+              title: Text(
+                'Rozetler',
+                style: TextStyle(
+                  fontFamily: "OpenDyslexic",
+                  color: ThemeConstants.creamColor,
+                ),
+              ),
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         centerTitle: true,
         title: Text("HeyLex", style: TextStyle(fontFamily: "OpenDyslexic")),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        leading: IconButton(
-          onPressed: () {},
-          iconSize: 32,
-          icon: Icon(Icons.military_tech, color: ThemeConstants.creamColor),
-        ),
+
         actions: [
           IconButton(
             icon: Icon(

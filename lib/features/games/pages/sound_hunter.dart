@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/components/auth_button.dart';
@@ -16,7 +17,18 @@ class _SoundHunterState extends State<SoundHunter> {
   String question = "Ku";
   List<String> options = ["Kutu", "Kapak", "Kutucuk", "Uçak"];
 
+  final player = AudioPlayer();
+
+  Future<void> goodAnswerPlaySound() async {
+    await player.play(AssetSource('sounds/good_answer.wav'));
+  }
+
+  Future<void> badAnswerPlaySound() async {
+    await player.play(AssetSource('sounds/bad_answer.wav'));
+  }
+
   void _nextStep() {
+    goodAnswerPlaySound();
     if (_currentStep < _totalSteps) {
       setState(() {
         _currentStep++;
@@ -63,6 +75,28 @@ class _SoundHunterState extends State<SoundHunter> {
               ),
             ],
           ),
+          SizedBox(height: 40),
+          SizedBox(
+            width: 300,
+            child: Column(
+              children: options.map((option) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: AuthButton(
+                    label: option,
+                    onPressed: () {
+                      // Cevap kontrolü burada yapılacak
+                      if (option.startsWith(question)) {
+                        _nextStep();
+                      } else {
+                        badAnswerPlaySound();
+                      }
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
         ],
       ),
     );
@@ -101,7 +135,6 @@ class _SoundHunterState extends State<SoundHunter> {
             padding: const EdgeInsets.all(50.0),
             child: Row(
               children: [
-                if (_currentStep > 1) SizedBox(width: 16),
                 Expanded(
                   child: AuthButton(
                     label: _currentStep == _totalSteps ? "Bitir" : "Devam Et",
