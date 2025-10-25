@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/components/auth_button.dart';
+import 'package:heylex/core/components/glass_effect_container.dart';
 
 class SoundHunter extends StatefulWidget {
   const SoundHunter({super.key});
@@ -17,6 +18,9 @@ class _SoundHunterState extends State<SoundHunter> {
   String question = "Ku";
   List<String> options = ["Kutu", "Kapak", "Kutucuk", "Uçak"];
 
+  List<int> _selectedIndices = [];
+  bool _hasChecked = false;
+
   final player = AudioPlayer();
 
   Future<void> goodAnswerPlaySound() async {
@@ -27,11 +31,60 @@ class _SoundHunterState extends State<SoundHunter> {
     await player.play(AssetSource('sounds/bad_answer.wav'));
   }
 
+  void _toggleSelection(int index) {
+    if (_hasChecked) return; // Kontrol edildikten sonra seçim yapılamaz
+
+    setState(() {
+      if (_selectedIndices.contains(index)) {
+        _selectedIndices.remove(index);
+      } else {
+        _selectedIndices.add(index);
+      }
+    });
+  }
+
+  void _checkAnswers() {
+    if (_selectedIndices.isEmpty) return;
+
+    setState(() {
+      _hasChecked = true;
+    });
+
+    // Seçilen cevaplardan herhangi biri yanlış mı kontrol et
+    bool hasWrongAnswer = _selectedIndices.any((index) {
+      return !options[index].contains(question);
+    });
+
+    if (hasWrongAnswer) {
+      badAnswerPlaySound();
+    } else {
+      goodAnswerPlaySound();
+    }
+  }
+
+  bool _isAnswerCorrect(int index) {
+    return options[index].contains(question);
+  }
+
+  Color? _getBorderColor(int index) {
+    final isSelected = _selectedIndices.contains(index);
+
+    if (!isSelected) return null;
+
+    if (!_hasChecked) {
+      return ThemeConstants.creamColor;
+    }
+
+    // Kontrol edildikten sonra
+    return _isAnswerCorrect(index) ? Colors.green : Colors.red;
+  }
+
   void _nextStep() {
-    goodAnswerPlaySound();
     if (_currentStep < _totalSteps) {
       setState(() {
         _currentStep++;
+        _selectedIndices = [];
+        _hasChecked = false;
       });
     } else {
       // Son adıma gelindi, oyun bitti
@@ -76,25 +129,46 @@ class _SoundHunterState extends State<SoundHunter> {
             ],
           ),
           SizedBox(height: 40),
-          SizedBox(
-            width: 300,
-            child: Column(
-              children: options.map((option) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: AuthButton(
-                    label: option,
-                    onPressed: () {
-                      // Cevap kontrolü burada yapılacak
-                      if (option.startsWith(question)) {
-                        _nextStep();
-                      } else {
-                        badAnswerPlaySound();
-                      }
-                    },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 2,
+              ),
+              itemCount: options.length,
+              itemBuilder: (context, index) {
+                final borderColor = _getBorderColor(index);
+
+                return GestureDetector(
+                  onTap: () => _toggleSelection(index),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(32),
+                      border: borderColor != null
+                          ? Border.all(color: borderColor, width: 3)
+                          : null,
+                    ),
+                    child: GlassEffectContainer(
+                      child: Center(
+                        child: Text(
+                          options[index],
+                          style: TextStyle(
+                            fontFamily: "OpenDyslexic",
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 );
-              }).toList(),
+              },
             ),
           ),
         ],
@@ -137,8 +211,12 @@ class _SoundHunterState extends State<SoundHunter> {
               children: [
                 Expanded(
                   child: AuthButton(
-                    label: _currentStep == _totalSteps ? "Bitir" : "Devam Et",
-                    onPressed: _nextStep,
+                    label: !_hasChecked
+                        ? "Kontrol Et"
+                        : (_currentStep == _totalSteps ? "Bitir" : "Devam Et"),
+                    onPressed: !_hasChecked
+                        ? (_selectedIndices.isNotEmpty ? _checkAnswers : null)
+                        : _nextStep,
                   ),
                 ),
               ],
