@@ -64,7 +64,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
             child: Text(
               widget.question,
               style: TextStyle(
-                fontSize: 36,
+                fontSize: 32,
                 fontFamily: "OpenDyslexic",
                 color: ThemeConstants.creamColor,
               ),
@@ -75,6 +75,8 @@ class _QuestionsPageState extends State<QuestionsPage> {
             child: ListView.builder(
               itemBuilder: (context, index) {
                 return CheckboxListTile(
+                  checkColor: ThemeConstants.darkGreyColor,
+                  activeColor: ThemeConstants.creamColor,
                   value: _selectedIndex == index,
                   title: Text(
                     widget.options[index],

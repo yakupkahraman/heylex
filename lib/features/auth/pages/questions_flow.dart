@@ -19,20 +19,58 @@ class _QuestionsFlowState extends State<QuestionsFlow> {
   final List<Map<String, dynamic>> _questions = [
     {
       'question': 'Hangi yaş grubundasınız?',
-      'options': ['0-12', '13-17', '18-24', '25+'],
+      'options': ['8-12', '13-17', '18+'],
       'key': 'age_group',
     },
     {
-      'question': 'Hangi seviyedesiniz?',
-      'options': ['Başlangıç', 'Orta', 'İleri'],
-      'key': 'level',
+      'question': 'En çok zorlandığınız alan hangisidir?',
+      'options': [
+        'Harfleri ayırt etmek',
+        'Heceleme ve yazım',
+        'Okuma hızım düşük',
+      ],
+      'key': 'hard_area',
     },
     {
-      'question': 'Günde ne kadar zaman ayırabilirsiniz?',
-      'options': ['10-20 dakika', '20-40 dakika', '40+ dakika'],
-      'key': 'daily_time',
+      'question': 'Okuma konusunda hangi hedef sana uyuyor?',
+      'options': [
+        'Daha hızlı okumak',
+        'Daha rahat okumak',
+        'Oyunlarla pratik yapmak',
+        'Anlama becerisi geliştirmek',
+      ],
+      'key': 'reading_goal',
     },
-    // Buraya daha fazla soru ekleyebilirsiniz
+    {
+      'question': 'Disleksi tanınız ne zaman kondu?',
+      'options': [
+        'Yeni tanı aldım (son 1 yıl)',
+        'Uzun süre (1-5 yıl)',
+        'Çocuklukta tanı aldım ',
+        'Hiç tanı almadım',
+      ],
+      'key': 'diagnosis_time',
+    },
+    {
+      'question': 'Hangi tür oyunlar seni daha çok motive eder?',
+      'options': [
+        'Bulmaca ve eşleştirme',
+        'Hikaye ve görev',
+        'Süreli mini oyunlar',
+        'Kelime bulma',
+        'Yazım ve tamamlama görevi',
+      ],
+      'key': 'motivating_games',
+    },
+    {
+      'question':
+          'Şu anda bir uzman, terapist veya öğretmenile çalışıyor musun?',
+      'options': [
+        'Evet, bir uzmanla düzenli olarak çalışıyorum',
+        'Hayır, bireysel olarak ilerliyorum',
+      ],
+      'key': 'working_with_professional',
+    },
   ];
 
   void _handleAnswer(String answer) {
