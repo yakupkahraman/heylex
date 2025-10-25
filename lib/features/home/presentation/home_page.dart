@@ -132,6 +132,10 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             GameInfoContainer(title: "Ses Avcısı", gameId: "sound_hunter"),
+            GameInfoContainer(
+              title: "Doğru mu Yanlış mı?",
+              gameId: "true_or_false",
+            ),
           ],
         ),
       ),
