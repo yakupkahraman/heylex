@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:heylex/core/components/glass_effect_container.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/service/auth_service.dart';

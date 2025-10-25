@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:heylex/core/components/glass_effect_container.dart';
+import 'package:heylex/features/auth/providers/user_provider.dart';
 import 'package:heylex/features/profile/components/settings_list_tile.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -78,11 +81,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     children: [
                       SettingsListTile(
-                        title: "Analizlerim",
-                        leadingIcon: Icons.analytics,
-                        onTap: () {},
-                      ),
-                      SettingsListTile(
                         title: "Planım",
                         leadingIcon: Icons.wallet,
                         onTap: () {},
@@ -90,7 +88,16 @@ class _ProfilePageState extends State<ProfilePage> {
                       SettingsListTile(
                         title: "Çıkış",
                         leadingIcon: Icons.logout,
-                        onTap: () {},
+                        onTap: () async {
+                          final userProvider = Provider.of<UserProvider>(
+                            context,
+                            listen: false,
+                          );
+                          await userProvider.logout();
+                          if (context.mounted) {
+                            context.go('/login');
+                          }
+                        },
                       ),
                     ],
                   ),
