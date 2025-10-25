@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/components/auth_button.dart';
 import 'package:heylex/core/components/glass_effect_container.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class SoundHunter extends StatefulWidget {
   const SoundHunter({super.key});
@@ -107,24 +108,53 @@ class _SoundHunterState extends State<SoundHunter> {
                 ),
               ),
               SizedBox(width: 16),
-              Container(
-                width: 100,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: ThemeConstants.creamColor,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Center(
-                  child: Text(
-                    '$question',
-                    style: TextStyle(
-                      fontFamily: "OpenDyslexic",
-                      fontSize: 24,
-                      color: ThemeConstants.darkGreyColor,
-                      fontWeight: FontWeight.bold,
+
+              Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30, right: 30),
+                    child: Container(
+                      width: 100,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: ThemeConstants.creamColor,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '$question',
+                          style: TextStyle(
+                            fontFamily: "OpenDyslexic",
+                            fontSize: 24,
+                            color: ThemeConstants.darkGreyColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+
+                  //ses tuşu
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: IconButton(
+                      onPressed: () {
+                        FlutterTts flutterTts = FlutterTts();
+                        flutterTts.speak(question);
+                      },
+                      style: IconButton.styleFrom(
+                        backgroundColor: ThemeConstants.darkGreyColor,
+                        shape: CircleBorder(),
+                      ),
+                      icon: Icon(
+                        Icons.volume_up,
+                        color: ThemeConstants.creamColor,
+                        size: 32,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
