@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:heylex/features/games/pages/jumbled_words_game.dart';
 import 'package:heylex/features/games/pages/sound_hunter.dart';
 import 'package:heylex/features/games/pages/true_or_false.dart';
 
@@ -14,6 +15,8 @@ class GamesFlow extends StatelessWidget {
         return const SoundHunter();
       case 'true_or_false':
         return const TrueOrFalse();
+      case 'jumbled_words':
+        return const JumbledWordsGame();
       default:
         return Scaffold(body: Center(child: Text('Oyun bulunamadı: $gameId')));
     }

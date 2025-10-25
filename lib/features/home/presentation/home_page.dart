@@ -136,6 +136,10 @@ class _HomePageState extends State<HomePage> {
               title: "Doğru mu Yanlış mı?",
               gameId: "true_or_false",
             ),
+            GameInfoContainer(
+              title: "Karışık Kelimeler",
+              gameId: "jumbled_words",
+            ),
           ],
         ),
       ),
