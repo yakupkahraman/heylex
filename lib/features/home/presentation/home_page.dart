@@ -140,6 +140,10 @@ class _HomePageState extends State<HomePage> {
               title: "Karışık Kelimeler",
               gameId: "jumbled_words",
             ),
+            GameInfoContainer(
+              title: "Cümle Detektifi",
+              gameId: "sentence_detective",
+            ),
           ],
         ),
       ),
