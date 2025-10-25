@@ -4,7 +4,10 @@ import 'package:heylex/features/auth/pages/login_page.dart';
 import 'package:heylex/features/auth/pages/questions_flow.dart';
 import 'package:heylex/features/auth/pages/register_page.dart';
 import 'package:heylex/features/games/pages/games_flow.dart';
-import 'package:heylex/features/home/presentation/home_page.dart';
+import 'package:heylex/features/home/pages/analysis_page.dart';
+import 'package:heylex/features/home/pages/home_page.dart';
+import 'package:heylex/features/home/pages/rosettes_page.dart';
+import 'package:heylex/features/home/pages/shell_page.dart';
 import 'package:heylex/features/professionals/pages/chat_page.dart';
 import 'package:heylex/features/professionals/pages/professionals_page.dart';
 import 'package:heylex/features/profile/pages/profile_page.dart';
@@ -52,39 +55,56 @@ class RouterManager {
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const HomePage(),
+      ShellRoute(
+        builder: (context, state, child) => ShellPage(child: child),
         routes: [
           GoRoute(
-            path: 'games/:id',
+            path: '/',
+            builder: (context, state) => const HomePage(),
+            routes: [
+              GoRoute(
+                path: 'games/:id',
+                builder: (context, state) {
+                  final gameId = state.pathParameters['id']!;
+                  return GamesFlow(gameId: gameId);
+                },
+              ),
+            ],
+          ),
+          GoRoute(
+            path: '/analysis',
             builder: (context, state) {
-              final gameId = state.pathParameters['id']!;
-              return GamesFlow(gameId: gameId);
+              return AnalysisPage();
             },
           ),
           GoRoute(
-            path: 'profile',
+            path: '/rosettes',
+            builder: (context, state) {
+              return RosettesPage();
+            },
+          ),
+          GoRoute(
+            path: '/profile',
             builder: (context, state) {
               return ProfilePage();
             },
           ),
+        ],
+      ),
+
+      GoRoute(
+        path: '/professionals',
+        builder: (context, state) {
+          return ProfessionalsPage();
+        },
+        routes: [
           GoRoute(
-            path: 'professionals',
+            path: 'chat/:professionalId',
             builder: (context, state) {
-              return ProfessionalsPage();
+              final professionalId = state.pathParameters['professionalId']!;
+              // return ProfessionalChatPage(professionalId: professionalId);
+              return ChatPage(chatId: professionalId);
             },
-            routes: [
-              GoRoute(
-                path: 'chat/:professionalId',
-                builder: (context, state) {
-                  final professionalId =
-                      state.pathParameters['professionalId']!;
-                  // return ProfessionalChatPage(professionalId: professionalId);
-                  return ChatPage(chatId: professionalId);
-                },
-              ),
-            ],
           ),
         ],
       ),
