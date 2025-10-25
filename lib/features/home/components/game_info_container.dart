@@ -21,7 +21,7 @@ class GameInfoContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Stack(
         children: [
           Container(
@@ -73,7 +73,7 @@ class GameInfoContainer extends StatelessWidget {
                   horizontal: 8.0,
                   vertical: 8.0,
                 ),
-                child: Icon(typeIcon, color: Colors.white, size: 34),
+                child: Icon(typeIcon, color: Colors.white, size: 28),
               ),
             ),
           ),
@@ -84,26 +84,18 @@ class GameInfoContainer extends StatelessWidget {
               onTap: () {
                 context.go('/games/$gameId');
               },
-              child: GlassEffectContainer(
+              child: GlassEffectCircleContainer(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
+                    horizontal: 4.0,
+                    vertical: 4.0,
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.play_arrow_rounded,
                         color: Colors.green,
-                        size: 28,
-                      ),
-                      Text(
-                        "Başla",
-                        style: TextStyle(
-                          fontFamily: "OpenDyslexic",
-                          fontSize: 24,
-                          color: ThemeConstants.creamColor,
-                        ),
+                        size: 46,
                       ),
                     ],
                   ),
