@@ -1,20 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:heylex/core/theme/theme_provider.dart';
+import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/service/auth_service.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:heylex/features/home/components/game_info_container.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
-  Future<void> handleSignOut(BuildContext context) async {
-    await AuthService().signOut();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('is_logged_in', false);
-    await prefs.setBool('questions_completed', false);
-    if (context.mounted) {
-      context.go('/auth');
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String _userName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    try {
+      final name = await AuthService().getCurrentUserName();
+
+      setState(() {
+        _userName = name ?? 'Kullanıcı';
+      });
+    } catch (e) {
+      setState(() {
+        _userName = 'Kullanıcı';
+      });
     }
   }
 
@@ -23,30 +38,51 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text("HeyLex"),
+        title: Text("HeyLex", style: TextStyle(fontFamily: "OpenDyslexic")),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        leading: IconButton(
+          onPressed: () {},
+          iconSize: 32,
+          icon: Icon(Icons.military_tech, color: ThemeConstants.creamColor),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.sunny),
-            onPressed: () {
-              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-            },
-          ),
-          IconButton(
-            onPressed: () async {
-              await handleSignOut(context);
-            },
-            icon: Icon(Icons.logout),
+            icon: Icon(
+              Icons.account_circle_rounded,
+              color: ThemeConstants.creamColor,
+            ),
+            iconSize: 32,
+            onPressed: () {},
           ),
         ],
       ),
-      body: Center(
-        child: Text(
-          AuthService().getCurrentUserEmail() ?? "Hoşgeldiniz!",
-          style: TextStyle(
-            fontFamily: 'OpenDyslexic',
-            fontSize: 24,
-            color: Theme.of(context).textTheme.bodyLarge?.color,
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: "SELAM ${_userName.toUpperCase()},",
+                    style: TextStyle(
+                      fontFamily: "OpenDyslexic",
+                      color: ThemeConstants.creamColor,
+                    ),
+                  ),
+                  TextSpan(
+                    text:
+                        " cevapların doğrultusunda öncelik sıralamasına göre senin için hazırladığımız eğitimler aşağıdadır.",
+                    style: TextStyle(
+                      fontFamily: "OpenDyslexic",
+                      color: ThemeConstants.creamColor.withOpacity(0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            GameInfoContainer(title: "Ses Avcısı", gameId: "sound_hunter"),
+          ],
         ),
       ),
     );
