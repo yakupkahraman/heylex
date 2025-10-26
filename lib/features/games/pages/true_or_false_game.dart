@@ -5,6 +5,9 @@ import 'package:heylex/core/components/glass_effect_container.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/components/auth_button.dart';
 import 'package:heylex/features/games/service/game_service.dart';
+import 'package:heylex/features/games/service/ai__game_service.dart';
+import 'package:heylex/features/auth/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class TrueOrFalseGame extends StatefulWidget {
   const TrueOrFalseGame({super.key});
@@ -14,22 +17,76 @@ class TrueOrFalseGame extends StatefulWidget {
 }
 
 class _TrueOrFalseState extends State<TrueOrFalseGame> {
-  int _currentStep = 1;
-  final int _totalSteps = 5;
+  int _currentStep = 0;
+  int _totalSteps = 5;
 
   int _correctAnswers = 0;
   int _wrongAnswers = 0;
 
-  // Her adımda farklı kelimeler gösterilebilir
-  List<String> words = ["gözlük", "kedi", "köpek", "lokum", "polsi"];
-  String wrongWord = "polsi"; // Yanlış yazılmış kelime
-  String correctWord = "polis"; // Doğru yazımı
+  List<TrueOrFalseQuestion> _questions = [];
+  bool _isLoading = true;
 
   int? _selectedIndex;
   bool _hasChecked = false;
 
   final player = AudioPlayer();
   final _gameService = GameService();
+  final _aiGameService = AiGameService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadQuestions();
+  }
+
+  @override
+  void dispose() {
+    player.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadQuestions() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    try {
+      final response = await _aiGameService.getTrueOrFalseQuestions(
+        ageGroup: userProvider.ageGroup ?? '',
+        hardArea: userProvider.hardArea ?? '',
+        readingGoal: userProvider.readingGoal ?? '',
+        diagnosisTime: userProvider.diagnosisTime ?? '',
+        motivatingGames: userProvider.motivatingGames ?? '',
+        workingWithProfessional: userProvider.workingWithProfessional ?? '',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _questions = response.questions;
+        _totalSteps = _questions.length;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Sorular yüklenemedi: $e')));
+    }
+  }
+
+  List<String> get words {
+    if (_questions.isEmpty || _currentStep >= _questions.length) return [];
+    return _questions[_currentStep].words;
+  }
+
+  int get wrongIndex {
+    if (_questions.isEmpty || _currentStep >= _questions.length) return -1;
+    return _questions[_currentStep].wrongIndex;
+  }
 
   Future<void> goodAnswerPlaySound() async {
     await player.play(AssetSource('sounds/good_answer.wav'));
@@ -54,8 +111,7 @@ class _TrueOrFalseState extends State<TrueOrFalseGame> {
       _hasChecked = true;
     });
 
-    // Seçilen kelime yanlış kelime mi kontrol et
-    bool isCorrect = words[_selectedIndex!] == wrongWord;
+    bool isCorrect = _selectedIndex! == wrongIndex;
 
     if (isCorrect) {
       _correctAnswers++;
@@ -67,8 +123,7 @@ class _TrueOrFalseState extends State<TrueOrFalseGame> {
   }
 
   bool _isAnswerCorrect(int index) {
-    // Sadece yanlış yazılmış kelime doğru cevaptır
-    return words[index] == wrongWord;
+    return index == wrongIndex;
   }
 
   Color? _getBorderColor(int index) {
@@ -85,15 +140,13 @@ class _TrueOrFalseState extends State<TrueOrFalseGame> {
   }
 
   void _nextStep() {
-    if (_currentStep < _totalSteps) {
+    if (_currentStep < _totalSteps - 1) {
       setState(() {
         _currentStep++;
         _selectedIndex = null;
         _hasChecked = false;
-        // Yeni kelimeler yüklenebilir
       });
     } else {
-      // Son adıma gelindi, oyun bitti - sonuçları göster
       _showResultsDialog();
     }
   }
@@ -291,7 +344,7 @@ class _TrueOrFalseState extends State<TrueOrFalseGame> {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
-                value: _currentStep / _totalSteps,
+                value: _totalSteps > 0 ? _currentStep / _totalSteps : 0,
                 backgroundColor: ThemeConstants.creamColor.withOpacity(0.3),
                 valueColor: AlwaysStoppedAnimation<Color>(
                   ThemeConstants.creamColor,
@@ -303,28 +356,75 @@ class _TrueOrFalseState extends State<TrueOrFalseGame> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Expanded(child: _buildStepContent()),
-          Padding(
-            padding: const EdgeInsets.all(50.0),
-            child: Row(
+      body: _isLoading
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: ThemeConstants.creamColor),
+                  SizedBox(height: 16),
+                  Text(
+                    'Sorular hazırlanıyor...',
+                    style: TextStyle(
+                      fontFamily: "OpenDyslexic",
+                      fontSize: 18,
+                      color: ThemeConstants.creamColor,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : _questions.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: ThemeConstants.creamColor,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Sorular yüklenemedi',
+                    style: TextStyle(
+                      fontFamily: "OpenDyslexic",
+                      fontSize: 18,
+                      color: ThemeConstants.creamColor,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  AuthButton(
+                    label: 'Ana Sayfaya Dön',
+                    onPressed: () => context.go('/'),
+                  ),
+                ],
+              ),
+            )
+          : Column(
               children: [
-                Expanded(
-                  child: AuthButton(
-                    label: !_hasChecked
-                        ? "Kontrol Et"
-                        : (_currentStep == _totalSteps ? "Bitir" : "Devam Et"),
-                    onPressed: !_hasChecked
-                        ? (_selectedIndex != null ? _checkAnswers : null)
-                        : _nextStep,
+                Expanded(child: _buildStepContent()),
+                Padding(
+                  padding: const EdgeInsets.all(50.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: AuthButton(
+                          label: !_hasChecked
+                              ? "Kontrol Et"
+                              : (_currentStep == _totalSteps - 1
+                                    ? "Bitir"
+                                    : "Devam Et"),
+                          onPressed: !_hasChecked
+                              ? (_selectedIndex != null ? _checkAnswers : null)
+                              : _nextStep,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

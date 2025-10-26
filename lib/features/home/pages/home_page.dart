@@ -28,9 +28,11 @@ class _HomePageState extends State<HomePage> {
         _userName = name ?? 'Kullanıcı';
       });
     } catch (e) {
-      setState(() {
-        _userName = 'Kullanıcı';
-      });
+      if (mounted) {
+        setState(() {
+          _userName = 'Kullanıcı';
+        });
+      }
     }
   }
 

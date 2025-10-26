@@ -5,6 +5,9 @@ import 'package:heylex/core/components/glass_effect_container.dart';
 import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/components/auth_button.dart';
 import 'package:heylex/features/games/service/game_service.dart';
+import 'package:heylex/features/games/service/ai__game_service.dart';
+import 'package:heylex/features/auth/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class JumbledWordsGame extends StatefulWidget {
   const JumbledWordsGame({super.key});
@@ -14,26 +17,81 @@ class JumbledWordsGame extends StatefulWidget {
 }
 
 class _JumbledWordsGameState extends State<JumbledWordsGame> {
-  int _currentStep = 1;
-  final int _totalSteps = 5;
+  int _currentStep = 0;
+  int _totalSteps = 5;
 
   int _correctAnswers = 0;
   int _wrongAnswers = 0;
 
-  String correctWord = "furkan";
-  List<String> letters = ["f", "u", "r", "a", "n", "k"];
+  List<JumbledWordsQuestion> _questions = [];
+  bool _isLoading = true;
+
+  List<String> letters = [];
+  String correctWord = "";
 
   bool _hasChecked = false;
-  int? _selectedIndex; // Seçili harfin indexi
+  int? _selectedIndex;
 
   final player = AudioPlayer();
   final _gameService = GameService();
+  final _aiGameService = AiGameService();
 
   @override
   void initState() {
     super.initState();
-    // Harfleri karıştır (başlangıçta yanlış sırada)
-    letters.shuffle();
+    _loadQuestions();
+  }
+
+  @override
+  void dispose() {
+    player.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadQuestions() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    try {
+      final response = await _aiGameService.getJumbledWordsQuestions(
+        ageGroup: userProvider.ageGroup ?? '',
+        hardArea: userProvider.hardArea ?? '',
+        readingGoal: userProvider.readingGoal ?? '',
+        diagnosisTime: userProvider.diagnosisTime ?? '',
+        motivatingGames: userProvider.motivatingGames ?? '',
+        workingWithProfessional: userProvider.workingWithProfessional ?? '',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _questions = response.questions;
+        _totalSteps = _questions.length;
+        _isLoading = false;
+
+        if (_questions.isNotEmpty) {
+          _loadCurrentQuestion();
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Sorular yüklenemedi: $e')));
+    }
+  }
+
+  void _loadCurrentQuestion() {
+    if (_questions.isEmpty || _currentStep >= _questions.length) return;
+
+    setState(() {
+      correctWord = _questions[_currentStep].correctWord;
+      letters = List.from(_questions[_currentStep].shuffledLetters);
+    });
   }
 
   Future<void> goodAnswerPlaySound() async {
@@ -73,16 +131,14 @@ class _JumbledWordsGameState extends State<JumbledWordsGame> {
   }
 
   void _nextStep() {
-    if (_currentStep < _totalSteps) {
+    if (_currentStep < _totalSteps - 1) {
       setState(() {
         _currentStep++;
         _hasChecked = false;
         _selectedIndex = null;
-        // Yeni kelime için harfleri tekrar karıştır
-        letters.shuffle();
+        _loadCurrentQuestion();
       });
     } else {
-      // Son adıma gelindi, oyun bitti - sonuçları göster
       _showResultsDialog();
     }
   }
@@ -315,7 +371,7 @@ class _JumbledWordsGameState extends State<JumbledWordsGame> {
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
-                value: _currentStep / _totalSteps,
+                value: _totalSteps > 0 ? _currentStep / _totalSteps : 0,
                 backgroundColor: ThemeConstants.creamColor.withOpacity(0.3),
                 valueColor: AlwaysStoppedAnimation<Color>(
                   ThemeConstants.creamColor,
@@ -327,26 +383,73 @@ class _JumbledWordsGameState extends State<JumbledWordsGame> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Expanded(child: _buildStepContent()),
-          Padding(
-            padding: const EdgeInsets.all(50.0),
-            child: Row(
+      body: _isLoading
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: ThemeConstants.creamColor),
+                  SizedBox(height: 16),
+                  Text(
+                    'Sorular hazırlanıyor...',
+                    style: TextStyle(
+                      fontFamily: "OpenDyslexic",
+                      fontSize: 18,
+                      color: ThemeConstants.creamColor,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : _questions.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: ThemeConstants.creamColor,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Sorular yüklenemedi',
+                    style: TextStyle(
+                      fontFamily: "OpenDyslexic",
+                      fontSize: 18,
+                      color: ThemeConstants.creamColor,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  AuthButton(
+                    label: 'Ana Sayfaya Dön',
+                    onPressed: () => context.go('/'),
+                  ),
+                ],
+              ),
+            )
+          : Column(
               children: [
-                Expanded(
-                  child: AuthButton(
-                    label: !_hasChecked
-                        ? "Kontrol Et"
-                        : (_currentStep == _totalSteps ? "Bitir" : "Devam Et"),
-                    onPressed: !_hasChecked ? _checkAnswers : _nextStep,
+                Expanded(child: _buildStepContent()),
+                Padding(
+                  padding: const EdgeInsets.all(50.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: AuthButton(
+                          label: !_hasChecked
+                              ? "Kontrol Et"
+                              : (_currentStep == _totalSteps - 1
+                                    ? "Bitir"
+                                    : "Devam Et"),
+                          onPressed: !_hasChecked ? _checkAnswers : _nextStep,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
