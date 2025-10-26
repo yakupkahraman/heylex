@@ -43,6 +43,7 @@ dependencies:
   fl_chart: ^1.1.1
   shimmer: ^3.0.0
   dio: ^5.9.0
+  icons_launcher: ^3.0.3
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +60,19 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+icons_launcher:
+  image_path: "assets/icons/logo_icon.png"
+  platforms:
+    android:
+      enable: true
+    ios:
+      enable: true
+    web:
+      enable: true
+    macos:
+      enable: true
+
+
 flutter:
 
   # The following line ensures that the Material Icons font is

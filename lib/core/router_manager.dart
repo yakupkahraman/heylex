@@ -6,11 +6,10 @@ import 'package:heylex/features/auth/pages/register_page.dart';
 import 'package:heylex/features/games/pages/games_flow.dart';
 import 'package:heylex/features/home/pages/analysis_page.dart';
 import 'package:heylex/features/home/pages/home_page.dart';
+import 'package:heylex/features/home/pages/my_plans.dart';
 import 'package:heylex/features/home/pages/rosettes_page.dart';
 import 'package:heylex/features/home/pages/shell_page.dart';
-import 'package:heylex/features/professionals/pages/chat_page.dart';
-import 'package:heylex/features/professionals/pages/professionals_page.dart';
-import 'package:heylex/features/profile/pages/profile_page.dart';
+import 'package:heylex/features/home/pages/profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RouterManager {
@@ -80,27 +79,17 @@ class RouterManager {
         ],
       ),
       GoRoute(
+        path: '/my-plans',
+        builder: (context, state) {
+          return MyPlans();
+        },
+      ),
+      GoRoute(
         path: '/games/:id',
         builder: (context, state) {
           final gameId = state.pathParameters['id']!;
           return GamesFlow(gameId: gameId);
         },
-      ),
-      GoRoute(
-        path: '/professionals',
-        builder: (context, state) {
-          return ProfessionalsPage();
-        },
-        routes: [
-          GoRoute(
-            path: 'chat/:professionalId',
-            builder: (context, state) {
-              final professionalId = state.pathParameters['professionalId']!;
-              // return ProfessionalChatPage(professionalId: professionalId);
-              return ChatPage(chatId: professionalId);
-            },
-          ),
-        ],
       ),
       GoRoute(
         path: '/auth',

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:heylex/core/components/glass_effect_container.dart';
+import 'package:heylex/core/theme/theme_constants.dart';
 import 'package:heylex/features/auth/providers/user_provider.dart';
-import 'package:heylex/features/profile/components/settings_list_tile.dart';
+import 'package:heylex/features/home/components/settings_list_tile.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -64,6 +65,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                 : _userEmail?.isNotEmpty == true
                                 ? _userEmail![0].toUpperCase()
                                 : '?',
+                            style: TextStyle(
+                              fontFamily: "OpenDyslexic",
+                              color: ThemeConstants.creamColor,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                   title: _isLoading
@@ -83,7 +89,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       SettingsListTile(
                         title: "Planım",
                         leadingIcon: Icons.wallet,
-                        onTap: () {},
+                        onTap: () {
+                          context.push('/my-plans');
+                        },
                       ),
                       SettingsListTile(
                         title: "Çıkış",

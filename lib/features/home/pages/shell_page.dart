@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:heylex/features/home/pages/analysis_page.dart';
 import 'package:heylex/features/home/pages/home_page.dart';
 import 'package:heylex/features/home/pages/rosettes_page.dart';
-import 'package:heylex/features/profile/pages/profile_page.dart';
+import 'package:heylex/features/home/pages/profile_page.dart';
 
 class ShellPage extends StatefulWidget {
   final Widget child;
